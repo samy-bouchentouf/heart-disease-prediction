@@ -6,7 +6,10 @@ columns = [
     "ca", "thal", "num"
 ]
 
-df = pd.read_csv("../data/processed.cleveland.data", header=None, names=columns, na_values="?")
+df = pd.read_csv("data/processed.cleveland.data", header=None, names=columns, na_values="?")
+
+print("Fichier chargé :", df.shape)
+print(df.head(20))
 
 df = df.dropna()
 
