@@ -24,9 +24,9 @@ def load_data():
         na_values="?"
     )
 
-    df = df.dropna().copy()
+    df = df.dropna()
 
     X = df.drop(columns=["num"])
-    y = df["num"]
+    y = (df["num"] > 0).astype(float)
 
     return X, y
