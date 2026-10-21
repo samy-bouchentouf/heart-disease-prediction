@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 from sklearn.metrics import (
     accuracy_score,
@@ -29,6 +30,35 @@ def evaluate_model(y_true, y_pred, y_proba=None, loss=None):
 
     return metrics
 
+# Threshold Selection
+def select_threshold(y_true, y_proba, min_precision=0.5):
+    precision, recall, thresholds = precision_recall_curve(
+        y_true, y_proba
+    )
+
+    # The last precision/recall values have no corresponding threshold.
+    precision = precision[:-1]
+    recall = recall[:-1]
+
+    valid_thresholds = precision >= min_precision
+
+    if not valid_thresholds.any():
+        return None, None
+
+    valid_indices = np.where(valid_thresholds)[0]
+
+    # Maximize recall, then precision in case of a tie.
+    best_idx = max(
+        valid_indices,
+        key=lambda i: (recall[i], precision[i])
+    )
+
+    threshold = thresholds[best_idx]
+
+    return threshold, {
+        "precision": precision[best_idx],
+        "recall": recall[best_idx]
+    }
 
 # Confusion Matrix
 def plot_confusion_matrix(y_true, y_pred, model_name):
