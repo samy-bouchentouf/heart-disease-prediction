@@ -14,8 +14,9 @@ from sklearn.metrics import (
 
 
 # Model Evaluation
-def evaluate_model(y_true, y_pred, y_proba=None, loss=None):
+def evaluate_model(y_true, y_pred, y_proba=None, loss=None, threshold=None):
     metrics = {
+        "Threshold": threshold,
         "Loss": loss,
         "Accuracy": accuracy_score(y_true, y_pred),
         "Precision": precision_score(y_true, y_pred, zero_division=0),
