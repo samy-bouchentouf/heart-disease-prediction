@@ -12,7 +12,9 @@ def create_logistic_regression(random_state):
         max_iter=1000,
         random_state=random_state,
         cv=5,
-        scoring="accuracy"
+        scoring="recall",
+        l1_ratios=(0.0,),
+        use_legacy_attributes=False
     )
 
 # Random Forest with Hyperparameter Tuning
@@ -29,7 +31,7 @@ def create_random_forest_search(random_state):
         model,
         params,
         cv=5,
-        scoring="accuracy"
+        scoring="recall"
     )
 
 # Multi-Layer Perceptron (MLP)
@@ -38,8 +40,8 @@ class MLP(nn.Module) :
     def __init__(self, in_features, out_features, dropout=0.3):
         super().__init__()
         self.layer1 = nn.Linear(in_features, 16)
-        self.layer2 = nn.Linear(16, 16)
-        self.layer3 = nn.Linear(16, out_features)
+        self.layer2 = nn.Linear(16, 32)
+        self.layer3 = nn.Linear(32, out_features)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(p=dropout)
 
