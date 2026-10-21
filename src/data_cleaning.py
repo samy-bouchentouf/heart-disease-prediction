@@ -1,17 +1,32 @@
+from pathlib import Path
+
 import pandas as pd
 
-columns = [
+
+COLUMNS = [
     "age", "sex", "cp", "trestbps", "chol", "fbs",
     "restecg", "thalach", "exang", "oldpeak", "slope",
     "ca", "thal", "num"
 ]
 
-df = pd.read_csv("data/processed.cleveland.data", header=None, names=columns, na_values="?")
+DATA_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "processed.cleveland.data"
+)
 
-print("Fichier chargé :", df.shape)
-print(df.head(20))
 
-df = df.dropna()
+def load_data():
+    df = pd.read_csv(
+        DATA_PATH,
+        header=None,
+        names=COLUMNS,
+        na_values="?"
+    )
 
-X = df.drop(columns=["num"])
-y = df["num"]
+    df = df.dropna().copy()
+
+    X = df.drop(columns=["num"])
+    y = df["num"]
+
+    return X, y
