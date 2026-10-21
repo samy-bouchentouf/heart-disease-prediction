@@ -10,7 +10,9 @@ from torch import nn
 def create_logistic_regression(random_state):
     return LogisticRegressionCV(
         max_iter=1000,
-        random_state=random_state
+        random_state=random_state,
+        cv=5,
+        scoring="accuracy"
     )
 
 # Random Forest with Hyperparameter Tuning
