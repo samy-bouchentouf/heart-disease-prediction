@@ -1,3 +1,10 @@
+"""
+Load and preprocess the UCI Heart Disease dataset.
+
+Handles missing values and converts the original target into a
+binary classification task: healthy (0) versus heart disease (1).
+"""
+
 from pathlib import Path
 
 import pandas as pd

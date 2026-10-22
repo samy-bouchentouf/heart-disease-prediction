@@ -1,3 +1,10 @@
+"""
+Define machine learning models and hyperparameter search spaces.
+
+Includes Logistic Regression with cross-validation, Random Forest
+with grid search, and a Multi-Layer Perceptron implemented in PyTorch.
+"""
+
 from sklearn.linear_model import LogisticRegressionCV
 
 from sklearn.ensemble import RandomForestClassifier

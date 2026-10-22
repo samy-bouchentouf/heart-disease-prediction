@@ -1,3 +1,11 @@
+"""
+Evaluate and compare binary classification models.
+
+Provides functions to compute evaluation metrics, select decision
+thresholds based on a minimum precision constraint, and visualize
+confusion matrices and precision-recall curves.
+"""
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
