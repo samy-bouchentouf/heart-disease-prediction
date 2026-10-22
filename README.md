@@ -53,21 +53,21 @@ The following results were obtained on the held-out test set.
 
 | Metric | Logistic Regression | Random Forest | MLP |
 |---|---:|---:|---:|
-| Decision threshold | 0.1518 | 0.1379 | 0.2084 |
-| Log loss | **0.3155** | 0.3702 | 0.3586 |
-| Accuracy | 0.7778 | 0.7111 | **0.8000** |
-| Precision | 0.6774 | 0.6176 | **0.7308** |
-| Recall | **1.0000** | **1.0000** | 0.9048 |
-| F1-score | 0.8077 | 0.7636 | **0.8085** |
-| Average Precision | **0.9407** | 0.9285 | 0.9301 |
+| Decision threshold | 0.1518 | 0.1379 | 0.2057 |
+| Log loss | **0.3155** | 0.3702 | 0.3432 |
+| Accuracy | 0.7778 | 0.7111 | **0.8222** |
+| Precision | 0.6774 | 0.6176 | **0.7407** |
+| Recall | **1.0000** | **1.0000** | 0.9524 |
+| F1-score | 0.8077 | 0.7636 | **0.8333** |
+| Average Precision | **0.9407** | 0.9285 | 0.9288 |
 
 ### Discussion
 
 - **Logistic Regression** achieves a recall of 1.0 on the test set, with a precision of 0.6774 and the lowest log loss. It also achieves the highest Average Precision.
 - **Random Forest** also achieves a recall of 1.0, but has lower precision, accuracy, and F1-score than Logistic Regression.
-- **MLP** achieves the highest accuracy, precision, and F1-score, although its recall is lower at 0.9048.
+- **MLP** achieves the highest accuracy, precision, and F1-score, although its recall is slightly lower at 0.9524.
 
-The precision-recall curves provide a more complete comparison by showing how precision varies at different recall levels. The Average Precision scores are relatively close, suggesting comparable overall precision-recall performance. At the MLP's selected threshold, Logistic Regression achieves a higher recall but a lower precision, illustrating the trade-off between detecting more positive cases and limiting false positives.
+The precision-recall curves provide a more complete comparison by showing how precision varies at different recall levels. The Average Precision scores are relatively close, suggesting comparable overall precision-recall performance. At the recall selected for the MLP (0.9524), Logistic Regression achieves lower precision, illustrating the trade-off between detecting more positive cases and limiting false positives.
 
 These comparisons are intended to analyze model performance, not to select a final model. If a final model were to be selected, this decision should be based on the validation set, with the test set reserved for the final evaluation. Using test results to select a model would compromise the independence of that evaluation. Results should also be interpreted cautiously, as performance on a finite test set does not guarantee similar performance on unseen data.
 
