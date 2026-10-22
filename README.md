@@ -61,6 +61,8 @@ The following results were obtained on the held-out test set.
 | F1-score | 0.8077 | 0.7636 | **0.8333** |
 | Average Precision | **0.9407** | 0.9285 | 0.9288 |
 
+![Precision-Recall Curves](assets/precision_recall_curves.png)
+
 ### Discussion
 
 - **Logistic Regression** achieves a recall of 1.0 on the test set, with a precision of 0.6774 and the lowest log loss. It also achieves the highest Average Precision.
