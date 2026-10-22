@@ -22,9 +22,9 @@ def create_random_forest_search(random_state):
     model = RandomForestClassifier(random_state=random_state)
 
     params = {
-        "n_estimators": [10, 25, 50, 100, 200],
-        "max_depth": [None, 5, 10],
-        "min_samples_split": [2, 3, 5]
+        "n_estimators": [25, 40, 45, 50, 55, 60, 75],
+        "max_depth": [5, 6, 7, 8, 10, 15],
+        "min_samples_split": [2, 4, 5, 6, 7, 8]
     }
 
     return GridSearchCV(
