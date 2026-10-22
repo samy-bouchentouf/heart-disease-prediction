@@ -117,16 +117,27 @@ def compare_models(model_metrics):
 
 # Precision-Recall Curve Comparison
 def plot_precision_recall_comparison(curves):
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(9, 6))
+
+    styles = {
+        "Logistic Regression": {"color": "tab:blue", "linestyle": "-", "zorder": 3},
+        "Random Forest": {"color": "tab:orange", "linestyle": "--", "zorder": 2},
+        "MLP": {"color": "tab:green", "linestyle": ":", "zorder": 1},
+    }
 
     for model_name, curve in curves.items():
+        style = styles.get(model_name, {})
+
         plt.plot(
             curve["recall"],
             curve["precision"],
             label=(
                 f"{model_name} "
                 f"(AP = {curve['average_precision']:.3f})"
-            )
+            ),
+            linewidth=2.5,
+            alpha=0.9,
+            **style
         )
 
     plt.xlabel("Recall")
