@@ -30,6 +30,7 @@ from src.models import (
 )
 from src.evaluation import evaluate_model, select_threshold
 
+RECALL_WEIGHT = 0.8
 
 def run_experiment(random_state):
     """
@@ -95,14 +96,8 @@ def run_experiment(random_state):
     threshold_logreg, _ = select_threshold(
         y_val,
         y_proba_val_logreg,
-        min_precision=0.5
+        recall_weight=RECALL_WEIGHT
     )
-
-    if threshold_logreg is None:
-        raise ValueError(
-            "No valid threshold found for Logistic Regression "
-            f"with random_state={random_state}."
-        )
 
     y_proba_logreg_all = model_reg.predict_proba(X_test)
     y_proba_logreg = y_proba_logreg_all[:, 1]
@@ -138,14 +133,8 @@ def run_experiment(random_state):
     threshold_rf, _ = select_threshold(
         y_val,
         y_proba_val_rf,
-        min_precision=0.5
+        recall_weight=RECALL_WEIGHT
     )
-
-    if threshold_rf is None:
-        raise ValueError(
-            "No valid threshold found for Random Forest "
-            f"with random_state={random_state}."
-        )
 
     y_proba_rf_all = best_model.predict_proba(X_test)
     y_proba_rf = y_proba_rf_all[:, 1]
@@ -277,14 +266,8 @@ def run_experiment(random_state):
     threshold_mlp, _ = select_threshold(
         y_true_val_mlp,
         y_proba_val_mlp,
-        min_precision=0.5
+        recall_weight=RECALL_WEIGHT
     )
-
-    if threshold_mlp is None:
-        raise ValueError(
-            "No valid threshold found for MLP "
-            f"with random_state={random_state}."
-        )
 
     # Evaluate the MLP on the test set
     with torch.no_grad():

@@ -2,8 +2,8 @@
 Evaluate and compare binary classification models.
 
 Provides functions to compute evaluation metrics, select decision
-thresholds based on a minimum precision constraint, and visualize
-confusion matrices and precision-recall curves.
+thresholds by maximizing a weighted combination of recall and precision,
+and visualize confusion matrices and precision-recall curves.
 """
 
 import matplotlib.pyplot as plt
@@ -40,7 +40,7 @@ def evaluate_model(y_true, y_pred, y_proba=None, loss=None, threshold=None):
     return metrics
 
 # Threshold Selection
-def select_threshold(y_true, y_proba, min_precision=0.5):
+def select_threshold(y_true, y_proba, recall_weight):
     precision, recall, thresholds = precision_recall_curve(
         y_true, y_proba
     )
@@ -49,24 +49,19 @@ def select_threshold(y_true, y_proba, min_precision=0.5):
     precision = precision[:-1]
     recall = recall[:-1]
 
-    valid_thresholds = precision >= min_precision
-
-    if not valid_thresholds.any():
-        return None, None
-
-    valid_indices = np.where(valid_thresholds)[0]
-
-    # Maximize recall, then precision in case of a tie.
-    best_idx = max(
-        valid_indices,
-        key=lambda i: (recall[i], precision[i])
+    scores = (
+        recall_weight * recall
+        + (1 - recall_weight) * precision
     )
+
+    best_idx = np.argmax(scores)
 
     threshold = thresholds[best_idx]
 
     return threshold, {
         "precision": precision[best_idx],
-        "recall": recall[best_idx]
+        "recall": recall[best_idx],
+        "score": scores[best_idx]
     }
 
 # Confusion Matrix
