@@ -4,6 +4,8 @@
 
 This project explores binary heart disease classification using machine learning. Three models are trained and compared: Logistic Regression, Random Forest, and a Multi-Layer Perceptron (MLP) implemented with PyTorch.
 
+The objective is to compare the performance and trade-offs of the three model types, rather than to select a single model.
+
 The main objective is to prioritize **recall** while balancing it against precision, reducing false negatives while limiting false positives. Decision thresholds are selected using a weighted combination of recall and precision, with greater weight assigned to recall.
 
 ## Models
@@ -80,7 +82,7 @@ However, these results reflect only one train-validation-test split. They may th
 
 The robustness analysis uses `StratifiedKFold` with five folds, shuffling enabled, and `random_state=40` to keep the fold assignments reproducible and consistent with the initial comparison. Each fold is held out once for testing, so the five test folds are disjoint and together cover the dataset.
 
-For each fold, the remaining 80% of the data is split into training and validation sets. The validation set is used for model selection where applicable and to select the decision threshold by maximizing `0.8 x recall + 0.2 x precision`. The threshold is then applied unchanged to the held-out test fold. The resulting proportions are approximately 68% training, 12% validation, and 20% test data per fold.
+For each fold, the remaining 80% of the data is split into training and validation sets. Logistic Regression and Random Forest hyperparameters are selected by cross-validation within the training subset. The validation set selects the MLP checkpoint using validation loss and is used to select the decision threshold for all three models by maximizing `0.8 x recall + 0.2 x precision`. Each model is evaluated on the held-out test fold using its validation-selected threshold. The resulting proportions are approximately 68% training, 12% validation, and 20% test data per fold.
 
 The table reports the mean and sample standard deviation of each test metric across the five folds.
 
@@ -96,7 +98,7 @@ The table reports the mean and sample standard deviation of each test metric acr
 
 The three models have broadly similar performance, and their mean precision-recall curves overlap substantially. Logistic Regression has the highest mean Average Precision (0.8970 ± 0.0371), although the difference from Random Forest (0.8899 ± 0.0363) and the MLP (0.8894 ± 0.0404) is modest.
 
-At the thresholds selected on each fold's validation set, Logistic Regression and Random Forest achieve similar mean recall (0.9198 ± 0.0825 and 0.9127 ± 0.0822). The MLP has higher mean precision (0.6996 ± 0.1769), but lower and more variable recall (0.8685 ± 0.1380). Given the project's priority on recall, Logistic Regression is the strongest provisional candidate, though the results do not show a clear overall winner.
+At the thresholds selected on each fold's validation set, Logistic Regression and Random Forest achieve similar mean recall (0.9198 ± 0.0825 and 0.9127 ± 0.0822). The MLP has higher mean precision (0.6996 ± 0.1769), but lower and more variable recall (0.8685 ± 0.1380). Given the project's priority on recall, Logistic Regression has a small advantage in mean recall and Average Precision, while Random Forest achieves similar recall and the MLP has higher mean precision. Overall, the three models show different trade-offs rather than a clear overall winner.
 
 These fold-level results are related because their training sets overlap. The reported standard deviations describe variation across this cross-validation procedure; they are not confidence intervals. The small dataset and validation-set threshold selection also limit how confidently these results can be generalized.
 
@@ -110,7 +112,7 @@ These fold-level results are related because their training sets overlap. The re
 
 ## Future Improvements
 
-- Use nested cross-validation or an independent external dataset for a less biased final performance estimate.
+- Compare all three models on an independent external dataset to assess whether their relative performance generalizes.
 - Investigate class weighting and alternative training strategies for the MLP.
 - Explore data augmentation techniques suitable for tabular data.
 - Improve model interpretability and analyze false-negative cases.
