@@ -17,8 +17,9 @@ The main objective is to prioritize **recall** while balancing it against precis
 ### 1. Data preprocessing
 
 - Convert the original target into a binary classification task: healthy (`0`) versus heart disease (`1`).
-- Split the dataset into training (70%), validation (15%), and test (15%) sets using stratified sampling.
-- Standardize the input features using `StandardScaler`, fitted exclusively on the training set.
+- For the initial model comparison, split the dataset into training (70%), validation (15%), and test (15%) sets using stratified sampling.
+- For the robustness analysis, use stratified five-fold cross-validation with `random_state=40`. In each fold, 20% of the data is held out for testing; 15% of the remaining data is used for validation, giving approximately 68% training, 12% validation, and 20% test data.
+- Standardize the input features using `StandardScaler`, fitted exclusively on the training set in each experiment.
 
 ### 2. Model training
 
@@ -73,56 +74,45 @@ On this initial split, Logistic Regression and Random Forest both achieve a reca
 
 The MLP achieves the highest accuracy, precision, and F1-score, while maintaining a recall of 0.9524. However, the precision-recall curves show that the three models have relatively similar overall performance, as reflected by their Average Precision scores. At the recall selected for the MLP (0.9524), Logistic Regression achieves lower precision, illustrating the trade-off between detecting more positive cases and limiting false positives. Overall, the MLP appears particularly competitive on this split, whereas Random Forest seems to be the weakest model.
 
-However, these results reflect only one train-validation-test split. They may therefore be influenced by the specific samples assigned to each subset and do not necessarily represent the models' typical performance. This motivates a robustness analysis across multiple random seeds.
+However, these results reflect only one train-validation-test split. They may therefore be influenced by the specific samples assigned to each subset and do not necessarily represent the models' typical performance. This motivates the five-fold cross-validation analysis described below.
 
-### 2. Robustness analysis: five experiments
+### 2. Robustness analysis: stratified five-fold cross-validation
 
-To evaluate how consistently the models perform across different data splits, the experiments are repeated with five random seeds: `40`, `41`, `42`, `43`, and `44`.
+The robustness analysis uses `StratifiedKFold` with five folds, shuffling enabled, and `random_state=40` to keep the fold assignments reproducible and consistent with the initial comparison. Each fold is held out once for testing, so the five test folds are disjoint and together cover the dataset.
 
-For each seed, stratified sampling is used to create training, validation, and test sets. The decision threshold is optimized on the validation set using the same weighted score as in the main experiment, then kept fixed for evaluation on the test set.
+For each fold, the remaining 80% of the data is split into training and validation sets. The validation set is used for model selection where applicable and to select the decision threshold by maximizing `0.8 x recall + 0.2 x precision`. The threshold is then applied unchanged to the held-out test fold. The resulting proportions are approximately 68% training, 12% validation, and 20% test data per fold.
 
-The results below summarize the mean and sample standard deviation of each test metric across the five runs. The precision-recall curves provide a complementary view of the trade-off between precision and recall across decision thresholds.
+The table reports the mean and sample standard deviation of each test metric across the five folds.
 
 | Model | Threshold | Loss | Accuracy | Precision | Recall | F1-score | Average Precision |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Logistic Regression | 0.1470 ± 0.0410 | 0.3376 ± 0.0972 | 0.7644 ± 0.0696 | 0.6846 ± 0.0706 | 0.9524 ± 0.0673 | 0.7927 ± 0.0425 | 0.9351 ± 0.0352 |
-| Random Forest | 0.2306 ± 0.1050 | 0.3594 ± 0.0409 | 0.7511 ± 0.0596 | 0.6926 ± 0.0914 | 0.9048 ± 0.1347 | 0.7729 ± 0.0346 | 0.9344 ± 0.0252 |
-| MLP | 0.1670 ± 0.0502 | 0.3420 ± 0.0880 | 0.7467 ± 0.1213 | 0.6815 ± 0.1026 | 0.9333 ± 0.0797 | 0.7809 ± 0.0698 | 0.9306 ± 0.0383 |
+| Logistic Regression | 0.2655 +/- 0.1866 | 0.4080 +/- 0.0523 | 0.7236 +/- 0.0992 | 0.6668 +/- 0.1471 | 0.9198 +/- 0.0825 | 0.7607 +/- 0.0641 | 0.8970 +/- 0.0371 |
+| Random Forest | 0.2706 +/- 0.1564 | 0.4165 +/- 0.0630 | 0.7103 +/- 0.1037 | 0.6488 +/- 0.1215 | 0.9127 +/- 0.0822 | 0.7493 +/- 0.0664 | 0.8899 +/- 0.0363 |
+| MLP | 0.2970 +/- 0.2631 | 0.4267 +/- 0.0881 | 0.7303 +/- 0.0934 | 0.6996 +/- 0.1769 | 0.8685 +/- 0.1380 | 0.7535 +/- 0.0605 | 0.8894 +/- 0.0404 |
 
-![Precision-Recall Curves](assets/mean_precision_recall_curves.png)
+![Mean Precision-Recall Curves Across Five Folds](assets/mean_precision_recall_curves.png)
 
 #### Discussion
 
-The robustness analysis provides a more representative comparison than the initial split alone. The mean Precision-Recall curves show that the three models have broadly comparable performance, with mean Average Precision scores of:
+The three models have broadly similar performance, and their mean precision-recall curves overlap substantially. Logistic Regression has the highest mean Average Precision (0.8970 +/- 0.0371), although the difference from Random Forest (0.8899 +/- 0.0363) and the MLP (0.8894 +/- 0.0404) is modest.
 
-- **Logistic Regression:** 0.9351 ± 0.0352
-- **Random Forest:** 0.9344 ± 0.0252
-- **MLP:** 0.9306 ± 0.0383
+At the thresholds selected on each fold's validation set, Logistic Regression and Random Forest achieve similar mean recall (0.9198 +/- 0.0825 and 0.9127 +/- 0.0822). The MLP has higher mean precision (0.6996 +/- 0.1769), but lower and more variable recall (0.8685 +/- 0.1380). Given the project's priority on recall, Logistic Regression is the strongest provisional candidate, though the results do not show a clear overall winner.
 
-The differences in Average Precision are small. However, the mean Precision-Recall curves reveal differences in the recall ranges where each model performs best.
-
-Random Forest performs particularly well over a recall range of approximately 0.75 to 0.95, making it a potentially attractive option when very high recall is not an absolute requirement. Logistic Regression appears more suitable when recall above approximately 0.95 is the priority. The MLP performs relatively well over a narrower range, approximately between 0.60 and 0.75, which is less relevant to the project's high-recall objective.
-
-These findings also illustrate why the initial comparison should not be considered conclusive. Random Forest appeared substantially weaker on the `random_state=40` split, but the five-experiment analysis shows that it can be competitive across a broader range of recall values. Similarly, the MLP's strong initial results do not translate into a clear overall advantage across the repeated experiments.
-
-Overall, Logistic Regression appears to be the most suitable candidate when prioritizing very high recall, while Random Forest remains a relevant alternative when there is greater flexibility in the recall target. The MLP does not demonstrate a clear advantage for the current objective.
-
-These conclusions remain tentative because the dataset is small and the robustness analysis uses only five splits.
+These fold-level results are related because their training sets overlap. The reported standard deviations describe variation across this cross-validation procedure; they are not confidence intervals. The small dataset and validation-set threshold selection also limit how confidently these results can be generalized.
 
 ## Limitations
 
-- The dataset is relatively small, which limits the models' ability to generalize to unseen data.
-- Performance depends on the particular train-validation-test split.
-- A small test set can produce substantial variation in reported metrics.
+- The dataset is small, and each cross-validation test fold contains only about one fifth of the observations, limiting how precisely performance can be estimated.
+- Fold-level results are related because the training sets overlap; their standard deviations are not confidence intervals.
+- Threshold selection uses a small validation set and may vary substantially across folds.
 - Threshold selection on the validation set does not guarantee the same precision or recall on unseen data.
 - The MLP is selected based on validation loss, which may not correspond to the best precision-recall trade-off after threshold optimization.
 
 ## Future Improvements
 
-- Evaluate robustness across more random seeds or use stratified cross-validation.
+- Use nested cross-validation or an independent external dataset for a less biased final performance estimate.
 - Investigate class weighting and alternative training strategies for the MLP.
 - Explore data augmentation techniques suitable for tabular data.
-- Assess performance on an independent external dataset.
 - Improve model interpretability and analyze false-negative cases.
 
 ## Project Structure
@@ -136,6 +126,7 @@ heart-disease-prediction/
 ├── src/
 │   ├── data_cleaning.py
 │   ├── evaluation.py
+│   ├── experiment.py
 │   └── models.py
 ├── README.md
 └── requirements.txt
