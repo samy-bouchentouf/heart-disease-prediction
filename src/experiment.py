@@ -1,13 +1,12 @@
 
 """
-Run a complete model comparison experiment using a specific random seed.
+Run a complete model comparison experiment for one cross-validation fold.
 
-The experiment includes stratified data splitting, preprocessing, model
-training, validation-based threshold selection, and evaluation on the
-held-out test set.
+The experiment includes an outer train-test split provided by the caller,
+an internal validation split, preprocessing, model training, validation-based
+threshold selection, and evaluation on the held-out test fold.
 
-The results can be used to compare model performance across different
-random seeds and assess the robustness of the models to data splitting.
+The results can be used to compare model performance across stratified folds.
 """
 
 import random
@@ -32,14 +31,18 @@ from src.evaluation import evaluate_model, select_threshold
 
 RECALL_WEIGHT = 0.8
 
-def run_experiment(random_state):
+def run_experiment(random_state, train_indices, test_indices):
     """
-    Run the three classification models using a specific random seed.
+    Run the three classification models for one cross-validation fold.
 
     Parameters
     ----------
     random_state : int
-        Seed used for data splitting and model initialization.
+        Seed used for the internal validation split and model initialization.
+    train_indices : array-like
+        Positional indices used for training and validation in this fold.
+    test_indices : array-like
+        Positional indices held out for evaluation in this fold.
 
     Returns
     -------
@@ -58,23 +61,20 @@ def run_experiment(random_state):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    # Load and split the dataset
+    # Load the dataset and create the internal validation split
     X, y = load_data()
 
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X,
-        y,
-        test_size=0.3,
-        random_state=random_state,
-        stratify=y
-    )
+    X_train_val = X.iloc[train_indices]
+    y_train_val = y.iloc[train_indices]
+    X_test = X.iloc[test_indices]
+    y_test = y.iloc[test_indices]
 
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp,
-        y_temp,
-        test_size=0.5,
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train_val,
+        y_train_val,
+        test_size=0.15,
         random_state=random_state,
-        stratify=y_temp
+        stratify=y_train_val
     )
 
     # Standardize the features
