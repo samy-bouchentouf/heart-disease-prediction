@@ -86,17 +86,17 @@ The table reports the mean and sample standard deviation of each test metric acr
 
 | Model | Threshold | Loss | Accuracy | Precision | Recall | F1-score | Average Precision |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Logistic Regression | 0.2655 +/- 0.1866 | 0.4080 +/- 0.0523 | 0.7236 +/- 0.0992 | 0.6668 +/- 0.1471 | 0.9198 +/- 0.0825 | 0.7607 +/- 0.0641 | 0.8970 +/- 0.0371 |
-| Random Forest | 0.2706 +/- 0.1564 | 0.4165 +/- 0.0630 | 0.7103 +/- 0.1037 | 0.6488 +/- 0.1215 | 0.9127 +/- 0.0822 | 0.7493 +/- 0.0664 | 0.8899 +/- 0.0363 |
-| MLP | 0.2970 +/- 0.2631 | 0.4267 +/- 0.0881 | 0.7303 +/- 0.0934 | 0.6996 +/- 0.1769 | 0.8685 +/- 0.1380 | 0.7535 +/- 0.0605 | 0.8894 +/- 0.0404 |
+| Logistic Regression | 0.2655 ± 0.1866 | 0.4080 ± 0.0523 | 0.7236 ± 0.0992 | 0.6668 ± 0.1471 | 0.9198 ± 0.0825 | 0.7607 ± 0.0641 | 0.8970 ± 0.0371 |
+| Random Forest | 0.2706 ± 0.1564 | 0.4165 ± 0.0630 | 0.7103 ± 0.1037 | 0.6488 ± 0.1215 | 0.9127 ± 0.0822 | 0.7493 ± 0.0664 | 0.8899 ± 0.0363 |
+| MLP | 0.2970 ± 0.2631 | 0.4267 ± 0.0881 | 0.7303 ± 0.0934 | 0.6996 ± 0.1769 | 0.8685 ± 0.1380 | 0.7535 ± 0.0605 | 0.8894 ± 0.0404 |
 
 ![Mean Precision-Recall Curves Across Five Folds](assets/mean_precision_recall_curves.png)
 
 #### Discussion
 
-The three models have broadly similar performance, and their mean precision-recall curves overlap substantially. Logistic Regression has the highest mean Average Precision (0.8970 +/- 0.0371), although the difference from Random Forest (0.8899 +/- 0.0363) and the MLP (0.8894 +/- 0.0404) is modest.
+The three models have broadly similar performance, and their mean precision-recall curves overlap substantially. Logistic Regression has the highest mean Average Precision (0.8970 ± 0.0371), although the difference from Random Forest (0.8899 ± 0.0363) and the MLP (0.8894 ± 0.0404) is modest.
 
-At the thresholds selected on each fold's validation set, Logistic Regression and Random Forest achieve similar mean recall (0.9198 +/- 0.0825 and 0.9127 +/- 0.0822). The MLP has higher mean precision (0.6996 +/- 0.1769), but lower and more variable recall (0.8685 +/- 0.1380). Given the project's priority on recall, Logistic Regression is the strongest provisional candidate, though the results do not show a clear overall winner.
+At the thresholds selected on each fold's validation set, Logistic Regression and Random Forest achieve similar mean recall (0.9198 ± 0.0825 and 0.9127 ± 0.0822). The MLP has higher mean precision (0.6996 ± 0.1769), but lower and more variable recall (0.8685 ± 0.1380). Given the project's priority on recall, Logistic Regression is the strongest provisional candidate, though the results do not show a clear overall winner.
 
 These fold-level results are related because their training sets overlap. The reported standard deviations describe variation across this cross-validation procedure; they are not confidence intervals. The small dataset and validation-set threshold selection also limit how confidently these results can be generalized.
 
